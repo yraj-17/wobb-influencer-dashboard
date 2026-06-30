@@ -1,80 +1,125 @@
-# Wobb Frontend Assignment
+# Wobb Influencer Dashboard
 
-A starter influencer search application built with **React**, **TypeScript**, **Vite**, and **Tailwind CSS**. This project is intentionally left in a rough-but-working state for candidates to improve.
+A modern influencer search and shortlisting tool built with React, TypeScript, Vite, and Tailwind CSS.
+
+---
+
+## Live Demo
+
+> Deploy URL will be added after deployment.
+
+---
+
+## What I Changed
+
+### 1. Bug Fixes
+| # | Location | Bug | Fix |
+|---|----------|-----|-----|
+| 1 | `ProfileDetailPage` | `engagement_rate * 10000` displayed rates 100× too high (e.g. 1.25% showed as 125.00%) | Changed to use shared `formatEngagementRate` which correctly multiplies by 100 |
+| 2 | `ProfileDetailPage` | "Engagements" stat tile showed `formatEngagementRate(rate)` — a percentage — instead of the engagement count | Now shows `formatCount(user.engagements)` — the actual integer count |
+| 3 | `dataHelpers.ts` | Username search was case-sensitive (`includes(query)`) while fullname search was case-insensitive — inconsistent | Both now use `.toLowerCase()` before comparison |
+| 4 | `SearchPage` | `clickCount` state and `handleProfileClick` were dead code — logged to console, never displayed | Removed entirely |
+| 5 | `ProfileCard` | `data-search={searchQuery}` DOM attribute served no purpose | Removed |
+| 6 | `SearchBar.tsx` | Entire component was dead code — never imported or used | Deleted |
+
+### 2. State Management — React Context → Zustand
+Replaced all local/prop-drilled state with a single Zustand store (`src/store/useInfluencerStore.ts`):
+- Platform selection and search query
+- Saved influencer list
+- List panel open/close UI state
+- `persist` middleware with `partialize` to save `platform` and `savedList` to `localStorage` — persists across page refreshes
+
+### 3. "Add to List" Feature (fully implemented)
+- **Save button** on every `ProfileCard` and the `ProfileDetailPage`
+- Prevents duplicate entries (checks `user_id`)
+- Button toggles between "Save" and "Saved" with visual feedback
+- `SavedListPanel` — a slide-over drawer accessible via the header "My List" button
+  - Shows all saved profiles with avatar, name, follower count, platform badge
+  - Click any profile to navigate to its detail page
+  - Remove individual profiles or clear the entire list
+  - Persists to `localStorage` via Zustand `persist`
+- Badge on header button shows count of saved profiles
+
+### 4. UI/UX Redesign
+- Clean, modern layout with a sticky header and gradient brand mark
+- Profile cards redesigned: avatar, verified badge, follower count, engagement rate, save toggle
+- Responsive grid layout (1 col mobile → 2 col tablet+)
+- Platform tabs with inline SVG icons for Instagram, YouTube, TikTok
+- Search bar with clear button and live result count
+- Profile detail page rebuilt with:
+  - Proper stat cards grid (all platform-specific fields shown)
+  - Follower growth timeline with visual bar chart
+  - Top hashtags, top mentions, brand affinity, interests sections
+  - Similar creators grid
+  - Skeleton loading state (no layout shift)
+  - Error and not-found states
+- `SavedListPanel` slide-over drawer with backdrop blur
+- Accessible: all interactive elements have `aria-label`, `role`, keyboard navigation, and `focus-visible` styles
+
+### 5. TypeScript Improvements
+- Expanded `FullUserProfile` to include all fields present in the JSON data (`stat_history`, `geo`, `brand_affinity`, `interests`, `top_hashtags`, `top_mentions`, `similar_users`, `contacts`, `language`, etc.)
+- Added new types: `StatHistory`, `GeoLocation`, `TagWeight`, `RelevantTag`, `BrandAffinity`, `Interest`, `SimilarUser`, `SavedProfile`
+- Removed implicit `any` patterns
+- Replaced `JSX.Element` (requires namespace import) with `ReactElement` from React
+
+### 6. Performance
+- `ProfileCard` and `ProfileList` wrapped in `memo` to prevent unnecessary re-renders when unrelated state changes
+- `useMemo` for `extractProfiles` and `filterProfiles` in `SearchPage` — prevents recomputing on every render
+- `useCallback` for event handlers in `ProfileCard` and `ProfileDetailPage`
+- Profile JSON files are loaded lazily via `import.meta.glob` — only the requested profile is fetched, not all at once
+- `loading="lazy"` on all `<img>` tags in lists
+
+### 7. Code Quality
+- Flat, consistent folder structure: `src/store/`, `src/components/`, `src/pages/`, `src/utils/`, `src/types/`
+- All components are focused single-responsibility
+- Shared formatter functions in `utils/formatters.ts` used consistently everywhere
+- `getPlatformLabel` extended with `getPlatformColor` and `getPlatformIcon` helpers
+
+---
+
+## Libraries Added
+
+| Library | Why |
+|---------|-----|
+| `zustand@5` | Lightweight, boilerplate-free state management to replace the missing React Context. `persist` middleware handles localStorage with zero extra code. |
+
+### Libraries intentionally NOT added
+- `@dnd-kit/*` was already installed in the starter but unused. I opted not to implement drag-to-reorder because it wasn't in the core requirements and the simpler list UX is cleaner for the use case. The packages remain available if needed.
+
+---
+
+## Assumptions
+
+- Profile JSON files are loaded by exact username match (case-sensitive filename). Users whose username in the search list doesn't match a profile filename will show a "profile not found" state — this matches the starter's behavior.
+- The `engagement_rate` field in all JSON data is a decimal (e.g. `0.0125` = 1.25%), not already a percentage. The original code's `* 10000` was a clear bug.
+- "Add to List" persists to localStorage only — no backend/API integration assumed.
+
+---
+
+## Trade-offs
+
+- **No drag-to-reorder**: The list panel uses a simple ordered list. `@dnd-kit` is installed and would be straightforward to add, but adds complexity without clear value for this scope.
+- **No pagination**: The data sets are small (10 items each), so client-side rendering of all results is fine. For real-world scale, virtual scrolling or server-side pagination would be needed.
+- **No tests written**: Focused on the core requirements first. Test scaffolding with Vitest would be the next step.
+
+---
+
+## Remaining Improvements (given more time)
+
+- [ ] Add Vitest + React Testing Library unit tests for store logic and component behavior
+- [ ] Implement `@dnd-kit` drag-to-reorder in the saved list panel
+- [ ] Add micro-animations (Framer Motion) for card hover, panel slide-in, save button state change
+- [ ] Export saved list as CSV
+- [ ] Add follower growth sparkline chart (Recharts or Chart.js)
+- [ ] Deploy to Vercel
+
+---
 
 ## Getting Started
 
 ```bash
 npm install
-npm run dev
+npm run dev       # http://localhost:5173
+npm run build     # Production build
+npm run lint      # ESLint
 ```
-
-Open [http://localhost:5173](http://localhost:5173) to view the app.
-
-## What's Included
-
-- **Search / Dashboard** — filter influencers by platform (Instagram, YouTube, TikTok) and search by username or full name
-- **Profile Details** — click a profile to view extended data loaded from individual JSON files
-- **Routing** — `react-router-dom` with `/` (search) and `/profile/:username` (details)
-
-Sample data lives in:
-
-- `src/assets/data/search/` — platform search results (10 profiles each)
-- `src/assets/data/profiles/` — detailed profile JSON per username
-
-## How to Submit
-
-1. **Download or clone** this starter project to your machine.
-2. **Create a new repository** on your own GitHub account. Do not fork the original assignment repo — push your work to a repo you own.
-3. Complete the tasks below and push your changes to that repository.
-4. **Share the public GitHub repository URL** with us as your submission.
-
-### Deadline (strict)
-
-- **Due:** **2 July 2026, 2:00 PM IST** (Indian Standard Time, UTC+5:30)
-- **Any git commits made after this deadline will disqualify your submission.** We will only consider the repository state as of the deadline; late commits will not be reviewed.
-- Make sure your final work is pushed **before** the cutoff.
-
-## AI Usage
-
-You may use any AI tools (Cursor, ChatGPT, Claude, GitHub Copilot, etc.). We are evaluating your final solution and engineering decisions.
-
-## Your Tasks
-
-Complete the following as part of your submission:
-
-1. **Find and fix all bugs and quality issues** — the codebase contains intentional bugs and quality issues. Identify and resolve them.
-
-2. **Completely redesign the UI/UX** — replace the basic layout with a polished, modern interface. Focus on usability, visual hierarchy, and delight.
-
-3. **Replace React Context with Zustand** — when you implement state management for the selected list, use [Zustand](https://github.com/pmndrs/zustand) instead of React Context.
-
-4. **Implement "Select profile & Add to List"** — the disabled "Add to List" button is a stub. Build the full feature:
-   - Select / add profiles to a persistent list
-   - View and manage the selected list
-   - Handle duplicates appropriately
-
-5. **Improve code quality and project structure** — refactor as needed, add proper types, and follow React best practices.
-
-6. **Optimize performance** — apply sensible optimizations where appropriate.
-
-7. **Use any libraries you need** — you are not limited to the current stack. Choose tools that help you deliver a great result (UI kits, state managers, testing libraries, etc.).
-
-## Scripts
-
-| Command        | Description              |
-| -------------- | ------------------------ |
-| `npm run dev`  | Start development server |
-| `npm run build`| Production build         |
-| `npm run lint` | Run ESLint               |
-
-## Submission Notes
-
-- Document any assumptions or trade-offs in your README
-- Ensure `npm run build` passes before submitting
-- Focus on demonstrating your judgment — not every possible feature needs to be built, but the core assignment items should be addressed thoughtfully
-- Double-check that your repo is public (or that we have access) and that the link is included in your submission
-- Please make meaningful commits throughout your work. We may review your commit history.
-- **Bonus:** Deploying the app (e.g. Vercel, Netlify, GitHub Pages) is optional but will be considered a plus — include the live URL in your submission if you do
-
-Good luck!

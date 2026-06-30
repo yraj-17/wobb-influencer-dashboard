@@ -22,10 +22,12 @@ export function filterProfiles(
   profiles: UserProfileSummary[],
   query: string
 ): UserProfileSummary[] {
-  if (!query) return profiles;
+  if (!query.trim()) return profiles;
+  const lower = query.toLowerCase();
   return profiles.filter((p) => {
-    const matchUsername = p.username.includes(query);
-    const matchFullname = p.fullname.toLowerCase().includes(query.toLowerCase());
+    // Fix: both username and fullname are now case-insensitive
+    const matchUsername = p.username.toLowerCase().includes(lower);
+    const matchFullname = p.fullname.toLowerCase().includes(lower);
     return matchUsername || matchFullname;
   });
 }
@@ -33,7 +35,28 @@ export function filterProfiles(
 export const PLATFORMS: Platform[] = ["instagram", "youtube", "tiktok"];
 
 export function getPlatformLabel(platform: Platform): string {
-  if (platform === "instagram") return "Instagram";
-  if (platform === "youtube") return "YouTube";
-  return "TikTok";
+  const labels: Record<Platform, string> = {
+    instagram: "Instagram",
+    youtube: "YouTube",
+    tiktok: "TikTok",
+  };
+  return labels[platform];
+}
+
+export function getPlatformColor(platform: Platform): string {
+  const colors: Record<Platform, string> = {
+    instagram: "#E1306C",
+    youtube: "#FF0000",
+    tiktok: "#010101",
+  };
+  return colors[platform];
+}
+
+export function getPlatformIcon(platform: Platform): string {
+  const icons: Record<Platform, string> = {
+    instagram: "📸",
+    youtube: "▶️",
+    tiktok: "🎵",
+  };
+  return icons[platform];
 }

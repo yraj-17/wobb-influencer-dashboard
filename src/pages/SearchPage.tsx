@@ -1,49 +1,44 @@
-import { useState } from "react";
-import type { Platform } from "@/types";
+import { useMemo } from "react";
 import { Layout } from "@/components/Layout";
 import { PlatformFilter } from "@/components/PlatformFilter";
 import { ProfileList } from "@/components/ProfileList";
 import { extractProfiles, filterProfiles } from "@/utils/dataHelpers";
+import { useInfluencerStore } from "@/store/useInfluencerStore";
 
 export function SearchPage() {
-  const [platform, setPlatform] = useState<Platform>("instagram");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [clickCount, setClickCount] = useState(0);
+  const platform = useInfluencerStore((s) => s.platform);
+  const searchQuery = useInfluencerStore((s) => s.searchQuery);
+  const setPlatform = useInfluencerStore((s) => s.setPlatform);
+  const setSearchQuery = useInfluencerStore((s) => s.setSearchQuery);
 
-  const allProfiles = extractProfiles(platform);
-  const filtered = filterProfiles(allProfiles, searchQuery);
-
-  const handleProfileClick = (username: string) => {
-    setClickCount(clickCount + 1);
-    console.log("Clicked profile:", username, "total clicks:", clickCount);
-  };
+  const allProfiles = useMemo(() => extractProfiles(platform), [platform]);
+  const filtered = useMemo(
+    () => filterProfiles(allProfiles, searchQuery),
+    [allProfiles, searchQuery]
+  );
 
   return (
-    <Layout title="Find Influencers">
-      <p className="text-gray-500 mb-4 text-sm">
-        Browse top creators across social platforms
-      </p>
+    <Layout>
+      {/* Hero */}
+      <div className="mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
+          Find Influencers
+        </h1>
+        <p className="text-gray-500 mt-2 text-base">
+          Discover and shortlist top creators across Instagram, YouTube, and TikTok.
+        </p>
+      </div>
 
       <PlatformFilter
         selected={platform}
-        onChange={(p) => {
-          setPlatform(p);
-          setSearchQuery("");
-        }}
+        onChange={setPlatform}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        totalResults={allProfiles.length}
+        filteredResults={filtered.length}
       />
 
-      <p className="text-xs text-gray-400 mb-2">
-        Showing {filtered.length} of {allProfiles.length} on {platform}
-      </p>
-
-      <ProfileList
-        profiles={filtered}
-        platform={platform}
-        searchQuery={searchQuery}
-        onProfileClick={handleProfileClick}
-      />
+      <ProfileList profiles={filtered} platform={platform} />
     </Layout>
   );
 }
