@@ -98,14 +98,12 @@ export const ProfileCard = memo(function ProfileCard({
           className="w-3.5 h-3.5"
           fill={inList ? "currentColor" : "none"}
           stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           viewBox="0 0 24 24"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-          />
+          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
         </svg>
         <span className="hidden sm:inline">{inList ? "Saved" : "Save"}</span>
       </button>

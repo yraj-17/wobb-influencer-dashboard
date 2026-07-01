@@ -47,16 +47,40 @@ export function Layout({ children }: LayoutProps) {
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="group relative flex items-center justify-center w-10 h-10 rounded-full border border-gray-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-400"
               aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
             >
               {theme === "light" ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                <svg
+                  className="w-5 h-5 transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
                 </svg>
               ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                <svg
+                  className="w-5 h-5 transition-transform duration-300 group-hover:rotate-45 group-hover:scale-110"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  viewBox="0 0 24 24"
+                >
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2" />
+                  <path d="M12 20v2" />
+                  <path d="m4.93 4.93 1.41 1.41" />
+                  <path d="m17.66 17.66 1.41 1.41" />
+                  <path d="M2 12h2" />
+                  <path d="M20 12h2" />
+                  <path d="m6.34 17.66-1.41 1.41" />
+                  <path d="m19.07 4.93-1.41 1.41" />
                 </svg>
               )}
             </button>
@@ -64,15 +88,29 @@ export function Layout({ children }: LayoutProps) {
             {/* Saved List Button */}
             <button
               onClick={() => setListPanelOpen(true)}
-              className="relative flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-700 dark:text-purple-300 font-medium text-sm transition-all focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className={`group relative flex items-center justify-center gap-2 h-10 px-4 rounded-full border transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-sm hover:shadow-md ${
+                savedList.length > 0
+                  ? "border-purple-200/80 dark:border-purple-900/60 bg-purple-50/50 dark:bg-purple-950/20 hover:bg-purple-100/50 dark:hover:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                  : "border-gray-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-900/80 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
+              }`}
               aria-label={`Open saved list — ${savedList.length} profiles`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              <svg
+                className={`w-4 h-4 transition-transform duration-200 group-hover:scale-110 ${
+                  savedList.length > 0 ? "fill-purple-600/10 dark:fill-purple-400/10" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                viewBox="0 0 24 24"
+              >
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
               </svg>
-              <span className="hidden sm:inline">My List</span>
+              <span className="font-semibold text-sm">My List</span>
               {savedList.length > 0 && (
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-purple-600 text-white text-xs font-bold">
+                <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-pink-500 px-1 text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-gray-900 animate-in zoom-in duration-300">
                   {savedList.length}
                 </span>
               )}

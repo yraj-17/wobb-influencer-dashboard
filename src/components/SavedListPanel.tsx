@@ -167,8 +167,16 @@ export function SavedListPanel() {
           {savedList.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-8">
               <div className="w-16 h-16 bg-purple-50 dark:bg-purple-950/20 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                <svg
+                  className="w-8 h-8 text-purple-400"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
                 </svg>
               </div>
               <p className="text-gray-700 dark:text-gray-300 font-medium">Your list is empty</p>

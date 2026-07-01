@@ -105,8 +105,20 @@ export function SortableSavedItem({
         className="flex-shrink-0 p-1.5 rounded-lg text-gray-455 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300"
         aria-label={`Remove ${profile.fullname} from list`}
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          viewBox="0 0 24 24"
+        >
+          <path d="M3 6h18" />
+          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+          <line x1="10" x2="10" y1="11" y2="17" />
+          <line x1="14" x2="14" y1="11" y2="17" />
         </svg>
       </button>
     </li>
