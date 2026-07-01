@@ -4,9 +4,13 @@ A modern, production-grade influencer search and shortlisting tool built with Re
 
 ---
 
-## Live Demo
 
-> Deploy URL will be added after deployment.
+
+## Deployment
+
+| Environment | URL |
+|-------------|-----|
+| Production  | https://wobb-influencer-dashboard.vercel.app/ |
 
 ---
 
@@ -15,61 +19,61 @@ A modern, production-grade influencer search and shortlisting tool built with Re
 ### 1. Bug Fixes
 | # | Location | Bug | Fix |
 |---|----------|-----|-----|
-| 1 | `ProfileDetailPage` | `engagement_rate * 10000` displayed rates 100× too high (e.g. 1.25% showed as 125.00%) | Changed to use shared `formatEngagementRate` which correctly multiplies by 100 |
+| 1 | `ProfileDetailPage` | `engagement_rate * 10000` displayed rates 100× too high (e.g. 1.25% showed as 125.00%) | Changed to use shared `formatEngagementRate`, which correctly multiplies by 100 |
 | 2 | `ProfileDetailPage` | "Engagements" stat tile showed `formatEngagementRate(rate)` — a percentage — instead of the engagement count | Now shows `formatCount(user.engagements)` — the actual integer count |
 | 3 | `dataHelpers.ts` | Username search was case-sensitive (`includes(query)`) while fullname search was case-insensitive — inconsistent | Both now use `.toLowerCase()` before comparison |
 | 4 | `SearchPage` | `clickCount` state and `handleProfileClick` were dead code — logged to console, never displayed | Removed entirely |
 | 5 | `ProfileCard` | `data-search={searchQuery}` DOM attribute served no purpose | Removed |
 | 6 | `SearchBar.tsx` | Entire component was dead code — never imported or used | Deleted |
-| 7 | `dataHelpers.ts` | Search page crashed (TypeError) on search when username or fullname was missing (e.g., Vlad and Niki) | Normalised profiles in `extractProfiles` with default fallbacks and added safe guards in `filterProfiles` |
-| 8 | `ProfileCard`, `ProfileDetailPage` | "Save" state did not update instantly due to reading store method via a function instead of subscribing to state | Updated store subscription to use `savedList` dependency directly via selectors, ensuring instant UI synchronization |
+| 7 | `dataHelpers.ts` | Search page crashed (TypeError) when a profile's username or fullname was missing (e.g. Vlad and Niki) | Normalised profiles in `extractProfiles` with default fallbacks and added safe guards in `filterProfiles` |
+| 8 | `ProfileCard`, `ProfileDetailPage` | "Save" state didn't update instantly — the component read the store's save method via a plain function instead of subscribing to state | Updated to select `savedList` directly from the store, so the UI updates immediately on change |
 
 ### 2. State Management — React Context → Zustand
 Replaced all local/prop-drilled state with a single, fine-grained Zustand store (`src/store/useInfluencerStore.ts`):
 - Platform selection and search query
-- Saved influencer list (with `reorderList` action for sorting)
+- Saved influencer list (with a `reorderList` action for drag-and-drop sorting)
 - List panel open/close UI state
-- Persisted state: platform preference, savedList, and theme preference are saved in `localStorage` via Zustand `persist` middleware
+- Persisted state (platform preference, saved list, theme preference) saved to `localStorage` via Zustand's `persist` middleware
 
 ### 3. "Add to List" Feature (fully implemented)
-- **Save button** on every `ProfileCard` and the `ProfileDetailPage`
-- Prevents duplicate entries (checks `user_id`)
-- Button toggles between "Save" and "Saved" with visual feedback and instant state update
-- **SavedListPanel** — slide-over drawer containing:
-  - Drag-and-drop sortable context via `@dnd-kit/core` and `@dnd-kit/sortable`
-  - Drag handles on each item to reorder saved creators manually
-  - One-click **Export CSV** button to download shortlist data
-  - Clear all and close panel features
+- **Save button** on every `ProfileCard` and on `ProfileDetailPage`
+- Duplicate prevention (checks `user_id` before adding)
+- Button toggles between "Save" / "Saved" with instant visual feedback
+- **SavedListPanel** — a slide-over drawer that includes:
+  - Drag-and-drop reordering via `@dnd-kit/core` + `@dnd-kit/sortable`
+  - Drag handles on each item
+  - One-click **Export CSV** for the shortlist
+  - Clear-all and close-panel actions
   - Automatic persistence to `localStorage`
-- Count badge on the header "My List" button
+- Count badge on the header's "My List" button
 
 ### 4. UI/UX Redesign
-- **Light/Dark Mode**: Header toggle switches between light and dark themes. Applied CSS transitions and color variants throughout the entire interface (headers, search bar, filters, cards, and drawers).
-- **Responsive Layout**: Fluid grids supporting desktop (3-col or 2-col), tablet, and mobile views.
-- **Platform Navigation**: SVG tabs with brand colors highlighting Instagram, YouTube, and TikTok.
-- **Interactive Follower Growth Chart**: Replaced static bar list with a custom responsive SVG line chart containing Y-axis gridlines, custom purple area gradient, hover nodes, and a floating data tooltip.
-- **Aesthetic Cards**: Shadow depth variations, scale-up zoom, and hover transitions.
-- **A11y Compliant**: Screen reader descriptive titles, keyboard focus visibility borders, and proper semantic element hierarchies.
+- **Light/Dark mode** toggle in the header, with consistent theming across headers, search bar, filters, cards, and drawers
+- **Responsive layout** — 3-col / 2-col grids on desktop, adapting down to tablet and mobile
+- **Platform navigation** — SVG tabs with brand colors for Instagram, YouTube, TikTok
+- **Interactive follower growth chart** — replaced the static bar list with a custom responsive SVG line chart (gridlines, gradient fill, hover nodes, floating tooltip)
+- **Card polish** — shadow depth, hover/zoom transitions
+- **Accessibility** — descriptive labels for screen readers, visible keyboard focus states, semantic element hierarchy
 
 ### 5. TypeScript Improvements
-- Expanded `FullUserProfile` to include all fields present in the JSON data (`stat_history`, `geo`, `brand_affinity`, `interests`, `top_hashtags`, `top_mentions`, `similar_users`, `contacts`, `language`, etc.)
-- Added new types: `StatHistory`, `GeoLocation`, `TagWeight`, `RelevantTag`, `BrandAffinity`, `Interest`, `SimilarUser`, `SavedProfile`
-- Removed implicit `any` patterns and added type safety for inline dnd-kit event parameters.
-- Replaced `JSX.Element` with `ReactElement` from React.
+- Expanded `FullUserProfile` to cover all fields actually present in the JSON data (`stat_history`, `geo`, `brand_affinity`, `interests`, `top_hashtags`, `top_mentions`, `similar_users`, `contacts`, `language`, etc.)
+- Added supporting types: `StatHistory`, `GeoLocation`, `TagWeight`, `RelevantTag`, `BrandAffinity`, `Interest`, `SimilarUser`, `SavedProfile`
+- Removed implicit `any` usage, including in dnd-kit event handlers
+- Replaced `JSX.Element` with `ReactElement` from React
 
 ### 6. Performance
-- Fine-grained selectors on `useInfluencerStore` hook in components so state updates only trigger relevant re-renders.
-- `ProfileCard` and `ProfileList` wrapped in `memo` to prevent unnecessary re-renders when unrelated state changes.
-- `useMemo` for `extractProfiles` and `filterProfiles` in `SearchPage` — prevents recomputing on every render.
-- `useCallback` for event handlers in `ProfileCard` and `ProfileDetailPage`.
-- Profile JSON files are loaded lazily via `import.meta.glob` — only the requested profile is fetched, not all at once.
-- `loading="lazy"` on all `<img>` tags in lists.
+- Fine-grained selectors on `useInfluencerStore` so components only re-render on relevant state changes
+- `ProfileCard` and `ProfileList` wrapped in `memo`
+- `useMemo` for `extractProfiles` and `filterProfiles` in `SearchPage`
+- `useCallback` for event handlers in `ProfileCard` and `ProfileDetailPage`
+- Profile JSON loaded lazily via `import.meta.glob` — only the requested profile is fetched
+- `loading="lazy"` on all list images
 
 ### 7. Code Quality
-- Flat, consistent folder structure: `src/store/`, `src/components/`, `src/pages/`, `src/utils/`, `src/types/`
-- All components are focused single-responsibility.
-- Shared formatter functions in `utils/formatters.ts` used consistently everywhere.
-- `getPlatformLabel` extended with `getPlatformColor` and `getPlatformIcon` helpers.
+- Consistent folder structure: `src/store/`, `src/components/`, `src/pages/`, `src/utils/`, `src/types/`
+- Single-responsibility components
+- Shared formatters in `utils/formatters.ts` used consistently everywhere
+- `getPlatformLabel` extended with `getPlatformColor` and `getPlatformIcon`
 
 ---
 
@@ -77,34 +81,36 @@ Replaced all local/prop-drilled state with a single, fine-grained Zustand store 
 
 | Library | Why |
 |---------|-----|
-| `zustand@5` | Lightweight, boilerplate-free state management. Handles local storage persistence cleanly. |
-| `@dnd-kit/core` | Extensible drag-and-drop primitives for React. Used for saved list panel dragging. |
-| `@dnd-kit/sortable` | Built-in sorting behaviors and strategies for list components. |
-| `@dnd-kit/utilities` | Drag transforms, transition, and style helpers. |
+| `zustand@5` | Lightweight, boilerplate-free state management with clean `localStorage` persistence |
+| `@dnd-kit/core` | Drag-and-drop primitives for React, used in the saved list panel |
+| `@dnd-kit/sortable` | Sorting strategies/behaviors on top of dnd-kit |
+| `@dnd-kit/utilities` | Drag transform/transition style helpers |
+
+**Removed:** `react-beautiful-dnd`, which was present in the starter's dependencies but unused and is no longer actively maintained — replaced by `@dnd-kit`, which is actively maintained and has first-class React 19 support.
 
 ---
 
 ## Assumptions
 
-- Profile JSON files are loaded by exact username match (case-sensitive filename). Users whose username in the search list doesn't match a profile filename will show a "profile not found" state — this matches the starter's behavior.
-- The `engagement_rate` field in all JSON data is a decimal (e.g. `0.0125` = 1.25%), not already a percentage. The original code's `* 10000` was a clear bug.
-- "Add to List" persists to localStorage only — no backend/API integration assumed.
+- Profile JSON files are loaded by exact username match (case-sensitive filename). A username in the search list that doesn't match a profile filename shows a "profile not found" state — matching the starter's original behavior.
+- `engagement_rate` in the JSON data is a decimal (e.g. `0.0125` = 1.25%), not already a percentage. The starter's `* 10000` was a clear bug.
+- "Add to List" persists to `localStorage` only — no backend/API integration was assumed, since none was provided in the starter.
 
 ---
 
 ## Trade-offs
 
-- **Client-side Filtering & Sorting**: Since mock data sets are small (10 items each), all computations (filtering, search, reordering) are done client-side. At scale, this would require server-side queries or a virtualized viewport.
-- **Local Storage Reordering**: Reordering the saved list saves order arrays inside local state/storage. On database-backed production apps, this would trigger PUT endpoints on a relational schema table.
+- **Client-side filtering & sorting**: mock data sets are small (10 items per platform), so all filtering, search, and reordering run client-side. At real scale, this would move to server-side queries and/or a virtualized list.
+- **Local storage for saved-list order**: reordering is persisted to local state/storage. In a database-backed production app, this would instead call an update endpoint against a relational schema.
 
 ---
 
 ## Remaining Improvements (given more time)
 
 - [ ] Add Vitest + React Testing Library unit tests for store logic and component behavior
-- [ ] Add transition animations using Framer Motion
-- [ ] Add a visual growth rate calculator indicator next to metrics
-- [ ] Deploy to Vercel
+- [ ] Add transition animations (e.g. Framer Motion)
+- [ ] Add a growth-rate indicator next to the follower chart
+- [ ] Deploy to Vercel and link the live demo above
 
 ---
 
@@ -112,7 +118,15 @@ Replaced all local/prop-drilled state with a single, fine-grained Zustand store 
 
 ```bash
 npm install
-npm run dev       # http://localhost:5173 (or next port if in use)
+npm run dev       # http://localhost:5173 (or next available port)
 npm run build     # Production build
 npm run lint      # ESLint
 ```
+
+---
+
+## Author
+
+**Raj**
+- Email:ryadav.tech17@gmail.com
+- LinkedIn: https://www.linkedin.com/in/raj-yadav-706b60397/
