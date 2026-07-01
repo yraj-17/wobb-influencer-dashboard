@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tell Tailwind v4 to activate dark: variants when .dark is on <html> */
+@variant dark (&:where(.dark, .dark *));
+
 *, *::before, *::after {
   box-sizing: border-box;
 }

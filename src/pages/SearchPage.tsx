@@ -21,10 +21,10 @@ export function SearchPage() {
     <Layout>
       {/* Hero */}
       <div className="mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
           Find Influencers
         </h1>
-        <p className="text-gray-500 mt-2 text-base">
+        <p className="text-gray-500 dark:text-gray-400 mt-2 text-base">
           Discover and shortlist top creators across Instagram, YouTube, and TikTok.
         </p>
       </div>

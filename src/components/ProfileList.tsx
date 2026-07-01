@@ -14,9 +14,9 @@ export const ProfileList = memo(function ProfileList({
   if (profiles.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+        <div className="w-16 h-16 bg-gray-105 dark:bg-gray-900 rounded-full flex items-center justify-center mb-4">
           <svg
-            className="w-8 h-8 text-gray-400"
+            className="w-8 h-8 text-gray-400 dark:text-gray-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -29,8 +29,8 @@ export const ProfileList = memo(function ProfileList({
             />
           </svg>
         </div>
-        <p className="text-gray-700 font-medium">No results found</p>
-        <p className="text-gray-400 text-sm mt-1">
+        <p className="text-gray-700 dark:text-gray-300 font-medium">No results found</p>
+        <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
           Try a different search term or platform
         </p>
       </div>

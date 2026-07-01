@@ -15,7 +15,14 @@ export function getSearchData(platform: Platform): SearchData {
 
 export function extractProfiles(platform: Platform): UserProfileSummary[] {
   const data = getSearchData(platform);
-  return data.accounts.map((item) => item.account.user_profile);
+  return data.accounts.map((item) => {
+    const profile = item.account.user_profile;
+    return {
+      ...profile,
+      username: profile.username || profile.handle || profile.custom_name || "unknown",
+      fullname: profile.fullname || profile.custom_name || profile.username || "Unknown",
+    };
+  });
 }
 
 export function filterProfiles(
@@ -25,9 +32,8 @@ export function filterProfiles(
   if (!query.trim()) return profiles;
   const lower = query.toLowerCase();
   return profiles.filter((p) => {
-    // Fix: both username and fullname are now case-insensitive
-    const matchUsername = p.username.toLowerCase().includes(lower);
-    const matchFullname = p.fullname.toLowerCase().includes(lower);
+    const matchUsername = (p.username || "").toLowerCase().includes(lower);
+    const matchFullname = (p.fullname || "").toLowerCase().includes(lower);
     return matchUsername || matchFullname;
   });
 }

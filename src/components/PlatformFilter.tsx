@@ -48,15 +48,15 @@ export const PlatformFilter = memo(function PlatformFilter({
               key={p}
               type="button"
               onClick={() => onChange(p)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-purple-400 ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-purple-400 ${
                 isActive
-                  ? "bg-gray-900 text-white shadow-sm"
-                  : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                  ? "bg-gray-900 dark:bg-purple-600 text-white dark:text-white shadow-sm"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
               }`}
               aria-pressed={isActive}
             >
               <span
-                className={isActive ? "text-white" : "text-gray-500"}
+                className={isActive ? "text-white" : "text-gray-400 dark:text-gray-400"}
               >
                 {platformIcons[p]}
               </span>
@@ -69,7 +69,7 @@ export const PlatformFilter = memo(function PlatformFilter({
       {/* Search bar */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
@@ -78,13 +78,13 @@ export const PlatformFilter = memo(function PlatformFilter({
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search by username or name..."
-          className="w-full pl-10 pr-10 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-shadow"
+          className="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-400 dark:focus:ring-purple-500/50 focus:border-transparent transition-all shadow-sm"
           aria-label="Search influencers"
         />
         {searchQuery && (
           <button
             onClick={() => onSearchChange("")}
-            className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600"
+            className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
             aria-label="Clear search"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +95,7 @@ export const PlatformFilter = memo(function PlatformFilter({
       </div>
 
       {/* Result count */}
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-400 dark:text-gray-500">
         {searchQuery
           ? `${filteredResults} result${filteredResults !== 1 ? "s" : ""} for "${searchQuery}" out of ${totalResults}`
           : `${totalResults} influencer${totalResults !== 1 ? "s" : ""} on ${getPlatformLabel(selected)}`}

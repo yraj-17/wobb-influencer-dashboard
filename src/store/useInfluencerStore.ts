@@ -15,10 +15,15 @@ interface InfluencerStore {
   removeFromList: (userId: string) => void;
   isInList: (userId: string) => boolean;
   clearList: () => void;
+  reorderList: (list: SavedProfile[]) => void;
 
   // UI state
   isListPanelOpen: boolean;
   setListPanelOpen: (open: boolean) => void;
+  
+  // Theme state
+  theme: "light" | "dark";
+  toggleTheme: () => void;
 }
 
 export const useInfluencerStore = create<InfluencerStore>()(
@@ -54,17 +59,23 @@ export const useInfluencerStore = create<InfluencerStore>()(
         return get().savedList.some((entry) => entry.profile.user_id === userId);
       },
       clearList: () => set({ savedList: [] }),
+      reorderList: (list) => set({ savedList: list }),
 
       // UI state — not persisted (excluded below)
       isListPanelOpen: false,
       setListPanelOpen: (open) => set({ isListPanelOpen: open }),
+
+      // Theme state
+      theme: "light",
+      toggleTheme: () => set((state) => ({ theme: state.theme === "light" ? "dark" : "light" })),
     }),
     {
       name: "wobb-influencer-storage",
-      // Only persist platform preference and savedList, not transient UI state
+      // Only persist platform preference, theme, and savedList
       partialize: (state) => ({
         platform: state.platform,
         savedList: state.savedList,
+        theme: state.theme,
       }),
     }
   )

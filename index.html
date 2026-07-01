@@ -4,7 +4,21 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>assignment</title>
+    <title>Wobb — Influencer Search</title>
+    <!-- Apply dark class before React hydrates to prevent flash of wrong theme -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("wobb-influencer-storage");
+          if (stored) {
+            var data = JSON.parse(stored);
+            if (data && data.state && data.state.theme === "dark") {
+              document.documentElement.classList.add("dark");
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
